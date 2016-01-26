@@ -14,6 +14,13 @@
   <body>
     <div class="container" role="main">
       <div class="header">
+          <%= if @current_user do %>
+              <li><%= @current_user.username %></li>
+              <li><%=  link "Log out", to: session_path(@conn, :delete, @current_user), method: "delete" %></li>
+          <% else %>
+              <li><%= link "Register", to: user_path(@conn, :new) %></li>
+              <li><%= link "Login", to: session_path(@conn, :new) %></li>
+          <% end %>
         <ul class="nav nav-pills pull-right">
           <li><a href="http://www.phoenixframework.org/docs">Get Started</a></li>
         </ul>
@@ -23,7 +30,7 @@
       <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
       <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
 
-      <%= @inner %>
+      <%= render @view_module, @view_template, assigns %>
 
     </div> <!-- /container -->
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
