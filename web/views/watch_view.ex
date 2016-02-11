@@ -6,13 +6,12 @@
 # We make no guarantees that this code is fit for any purpose.
 # Visit http://www.pragmaticprogrammer.com/titles/phoenix for more book information.
 #---
-defmodule Rumbl.UserView do
+defmodule Rumbl.WatchView do
   use Rumbl.Web, :view
-  alias Rumbl.User
 
-  def first_name(%User{name: name}) do
-    name
-    |> String.split(" ")
-    |> Enum.at(0)
+  def player_id(video) do
+    ~r/^.*(?:youtu.be\/|v\/|e\/|u\/\w+\/|embed\/|v=)(?<id>[^#\&\?]*).*/
+    |> Regex.named_captures(video.url)
+    |> get_in(["id"])
   end
 end

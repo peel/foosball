@@ -1,3 +1,11 @@
+#---
+# Excerpted from "Programming Phoenix",
+# published by The Pragmatic Bookshelf.
+# Copyrights apply to this code. It may not be used to create training material,
+# courses, books, articles, and the like. Contact us if you are in doubt.
+# We make no guarantees that this code is fit for any purpose.
+# Visit http://www.pragmaticprogrammer.com/titles/phoenix for more book information.
+#---
 defmodule Rumbl.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
@@ -21,8 +29,9 @@ defmodule Rumbl.ChannelCase do
       use Phoenix.ChannelTest
 
       alias Rumbl.Repo
-      import Ecto.Model
-      import Ecto.Query, only: [from: 2]
+      import Ecto
+      import Ecto.Changeset
+      import Ecto.Query, only: [from: 1, from: 2]
 
 
       # The default endpoint for testing

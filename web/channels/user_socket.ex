@@ -1,3 +1,11 @@
+#---
+# Excerpted from "Programming Phoenix",
+# published by The Pragmatic Bookshelf.
+# Copyrights apply to this code. It may not be used to create training material,
+# courses, books, articles, and the like. Contact us if you are in doubt.
+# We make no guarantees that this code is fit for any purpose.
+# Visit http://www.pragmaticprogrammer.com/titles/phoenix for more book information.
+#---
 defmodule Rumbl.UserSocket do
   use Phoenix.Socket
 
@@ -30,7 +38,7 @@ defmodule Rumbl.UserSocket do
   # Would allow you to broadcast a "disconnect" event and terminate
   # all active sockets and channels for a given user:
   #
-  #     Rumbl.Endpoint.broadcast("users_socket:" <> user.id, "disconnect", %{})
+  #     Rumbl.Endpoint.broadcast("users_socket:#{user.id}", "disconnect", %{})
   #
   # Returning `nil` makes this socket anonymous.
   def id(_socket), do: nil

@@ -6,13 +6,12 @@
 # We make no guarantees that this code is fit for any purpose.
 # Visit http://www.pragmaticprogrammer.com/titles/phoenix for more book information.
 #---
-defmodule Rumbl.UserView do
-  use Rumbl.Web, :view
-  alias Rumbl.User
+defmodule Rumbl.WatchController do
+  use Rumbl.Web, :controller
+  alias Rumbl.Video
 
-  def first_name(%User{name: name}) do
-    name
-    |> String.split(" ")
-    |> Enum.at(0)
+  def show(conn, %{"id" => id}) do
+    video = Repo.get!(Video, id)
+    render conn, "show.html", video: video
   end
 end

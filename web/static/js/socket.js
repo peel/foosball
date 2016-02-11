@@ -1,9 +1,17 @@
+/***
+ * Excerpted from "Programming Phoenix",
+ * published by The Pragmatic Bookshelf.
+ * Copyrights apply to this code. It may not be used to create training material,
+ * courses, books, articles, and the like. Contact us if you are in doubt.
+ * We make no guarantees that this code is fit for any purpose.
+ * Visit http://www.pragmaticprogrammer.com/titles/phoenix for more book information.
+***/
 // NOTE: The contents of this file will only be executed if
 // you uncomment its entry in "web/static/js/app.js".
 
 // To use Phoenix channels, the first step is to import Socket
 // and connect at the socket path in "lib/my_app/endpoint.ex":
-import {Socket} from "deps/phoenix/web/static/js/phoenix"
+import {Socket} from "phoenix"
 
 let socket = new Socket("/socket", {params: {token: window.userToken}})
 

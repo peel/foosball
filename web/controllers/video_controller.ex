@@ -1,3 +1,11 @@
+#---
+# Excerpted from "Programming Phoenix",
+# published by The Pragmatic Bookshelf.
+# Copyrights apply to this code. It may not be used to create training material,
+# courses, books, articles, and the like. Contact us if you are in doubt.
+# We make no guarantees that this code is fit for any purpose.
+# Visit http://www.pragmaticprogrammer.com/titles/phoenix for more book information.
+#---
 defmodule Rumbl.VideoController do
   use Rumbl.Web, :controller
 
@@ -5,11 +13,33 @@ defmodule Rumbl.VideoController do
   alias Rumbl.Category
 
   plug :scrub_params, "video" when action in [:create, :update]
+
+
   plug :load_categories when action in [:new, :create, :edit, :update]
+
+  defp load_categories(conn, _) do
+    query =
+      Category
+      |> Category.alphabetical
+      |> Category.names_and_ids
+    categories = Repo.all query
+    assign(conn, :categories, categories)
+  end
+
+  def action(conn, _) do
+    apply(__MODULE__, action_name(conn),
+          [conn, conn.params, conn.assigns.current_user])
+  end
 
   def index(conn, _params, user) do
     videos = Repo.all(user_videos(user))
+
     render(conn, "index.html", videos: videos)
+  end
+
+  def show(conn, %{"id" => id}, user) do
+    video = Repo.get!(user_videos(user), id)
+    render(conn, "show.html", video: video)
   end
 
   def new(conn, _params, user) do
@@ -37,11 +67,6 @@ defmodule Rumbl.VideoController do
     end
   end
 
-  def show(conn, %{"id" => id}, user) do
-    video = Repo.get!(user_videos(user), id)
-    render(conn, "show.html", video: video)
-  end
-
   def edit(conn, %{"id" => id}, user) do
     video = Repo.get!(user_videos(user), id)
     changeset = Video.changeset(video)
@@ -62,11 +87,8 @@ defmodule Rumbl.VideoController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    video = Repo.get!(Video, id)
-
-    # Here we use delete! (with a bang) because we expect
-    # it to always work (and if it does not, it will raise).
+  def delete(conn, %{"id" => id}, user) do
+    video = Repo.get!(user_videos(user), id)
     Repo.delete!(video)
 
     conn
@@ -75,21 +97,6 @@ defmodule Rumbl.VideoController do
   end
 
   defp user_videos(user) do
-	  assoc(user, :videos)
+    assoc(user, :videos)
   end
-
-  def action(conn, _) do
-    apply(__MODULE__, action_name(conn), [conn, conn.params, conn.assigns.current_user])
-  end
-
-  def load_categories(conn, _) do
-    query =
-      Category
-      |> Category.alphabetical
-      |> Category.names_and_ids
-
-    categories = Repo.all query
-    assign(conn, :categories, categories)
-  end
-
 end

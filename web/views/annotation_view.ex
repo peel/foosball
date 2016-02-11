@@ -6,13 +6,15 @@
 # We make no guarantees that this code is fit for any purpose.
 # Visit http://www.pragmaticprogrammer.com/titles/phoenix for more book information.
 #---
-defmodule Rumbl.UserView do
+defmodule Rumbl.AnnotationView do
   use Rumbl.Web, :view
-  alias Rumbl.User
 
-  def first_name(%User{name: name}) do
-    name
-    |> String.split(" ")
-    |> Enum.at(0)
+  def render("annotation.json", %{annotation: ann}) do
+    %{
+      id: ann.id,
+      body: ann.body,
+      at: ann.at,
+      user: render_one(ann.user, Rumbl.UserView, "user.json")
+    }
   end
 end

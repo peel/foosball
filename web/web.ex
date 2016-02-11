@@ -1,3 +1,11 @@
+#---
+# Excerpted from "Programming Phoenix",
+# published by The Pragmatic Bookshelf.
+# Copyrights apply to this code. It may not be used to create training material,
+# courses, books, articles, and the like. Contact us if you are in doubt.
+# We make no guarantees that this code is fit for any purpose.
+# Visit http://www.pragmaticprogrammer.com/titles/phoenix for more book information.
+#---
 defmodule Rumbl.Web do
   @moduledoc """
   A module that keeps using definitions for controllers,
@@ -31,12 +39,13 @@ defmodule Rumbl.Web do
       use Phoenix.Controller
 
       alias Rumbl.Repo
+      alias Rumbl.User
       import Ecto
       import Ecto.Query, only: [from: 1, from: 2]
 
       import Rumbl.Router.Helpers
       import Rumbl.Gettext
-      import Rumbl.Auth, only: [authenticate_user: 2]
+      import Rumbl.Auth, only: [authenticate_user: 2] # New import
     end
   end
 
@@ -60,7 +69,7 @@ defmodule Rumbl.Web do
     quote do
       use Phoenix.Router
 
-      import Rumbl.Auth, only: [authenticate_user: 2]
+      import Rumbl.Auth, only: [authenticate_user: 2] # New import
     end
   end
 
@@ -71,6 +80,7 @@ defmodule Rumbl.Web do
       alias Rumbl.Repo
       import Ecto
       import Ecto.Query, only: [from: 1, from: 2]
+      import Rumbl.Gettext
     end
   end
 

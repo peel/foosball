@@ -1,3 +1,11 @@
+#---
+# Excerpted from "Programming Phoenix",
+# published by The Pragmatic Bookshelf.
+# Copyrights apply to this code. It may not be used to create training material,
+# courses, books, articles, and the like. Contact us if you are in doubt.
+# We make no guarantees that this code is fit for any purpose.
+# Visit http://www.pragmaticprogrammer.com/titles/phoenix for more book information.
+#---
 defmodule Rumbl.Router do
   use Rumbl.Web, :router
 
@@ -20,17 +28,11 @@ defmodule Rumbl.Router do
     get "/", PageController, :index
     resources "/users", UserController, only: [:index, :show, :new, :create]
     resources "/sessions", SessionController, only: [:new, :create, :delete]
-    resources "/videos", VideoController
   end
 
   scope "/manage", Rumbl do
-    pipe_through [:browser, :authenticate_user] # Use the default browser stack
+    pipe_through [:browser, :authenticate_user]
 
     resources "/videos", VideoController
   end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", Rumbl do
-  #   pipe_through :api
-  # end
 end
