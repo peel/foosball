@@ -25,5 +25,3 @@ if (video) {
         console.log("player ready!")
     })
 }
-
-// import socket from "./socket"
