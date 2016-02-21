@@ -2,9 +2,11 @@ defmodule Rumbl.VideoChannel do
   use Rumbl.Web, :channel
   alias Rumbl.AnnotationView
 
-  def join("videos:" <> video_id, _params, socket) do
+  def join("videos:" <> video_id, params, socket) do
+    last_seen_id = params["last_seend_id"] || 0
     video = Repo.get!(Rumbl.Video, video_id)
     annotations = Repo.all(from a in assoc(video, :annotations),
+                           where: a.id > ^last_seen_id,
                            order_by: [desc: a.at],
                            limit: 200,
                            preload: [:user]
