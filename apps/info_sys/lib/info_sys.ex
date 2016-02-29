@@ -1,5 +1,11 @@
-defmodule Rumbl.InfoSys do
-  @backends [Rumbl.InfoSys.Wolfram]
+defmodule InfoSys do
+  use Application
+
+  @backends [InfoSys.Wolfram]
+
+  def start(_type, _args) do
+    InfoSys.Supervisor.start_link()
+  end
 
   defmodule Result do
     defstruct score: 0, text: nil, url: nil, backend: nil
@@ -23,14 +29,14 @@ defmodule Rumbl.InfoSys do
   defp spawn_query(backend, query, limit) do 
     query_ref = make_ref()
     opts = [backend, query, query_ref, self(), limit]
-    {:ok, pid} = Supervisor.start_child(Rumbl.InfoSys.Supervisor, opts)
+    {:ok, pid} = Supervisor.start_child(InfoSys.Supervisor, opts)
     monitor_ref = Process.monitor(pid)
     {pid, monitor_ref, query_ref}
   end
 
   defp await_results(children, opts) do
     timeout = opts[:timeout] || 5_000
-    timer = Process.send_after(self(), :timedout)
+    timer = Process.send_after(self(), :timedout, timeout)
 	  results = await_result(children, [], :infinity)
     cleanup(timer)
     results
