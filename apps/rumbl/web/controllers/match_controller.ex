@@ -1,7 +1,9 @@
 defmodule Rumbl.MatchController do
   use Rumbl.Web, :controller
+  require Logger
 
   alias Rumbl.Match
+  alias Rumbl.MatchChannel
 
   plug :scrub_params, "match" when action in [:create, :update]
 
@@ -12,9 +14,10 @@ defmodule Rumbl.MatchController do
 
   def create(conn, %{"match" => %{"red_attack" => red_attack , "red_defence" => red_defence, "blue_defence" => blue_defence, "blue_attack" => blue_attack}}) do
     changeset = Match.changeset(%Match{}, %{"score_blue" => 0, "score_red"=> 0, "started_at" => DateTime.utc_now() |> DateTime.to_iso8601, "red_attack"=> red_attack, "red_defence"=> red_defence, "blue_attack"=> blue_attack, "blue_defence"=> blue_defence})
-
     case Repo.insert(changeset) do
       {:ok, match} ->
+        rasbperry_started
+        MatchChannel.game_start(match)
         conn
         |> put_status(:created)
         |> put_resp_header("location", match_path(conn, :show, match))
@@ -33,9 +36,17 @@ defmodule Rumbl.MatchController do
 
   def red(conn, _params) do
     match = Repo.one!(from m in Match, order_by: [desc: m.id], limit: 1)
-    # update state to goal
+    rasbperry_score("red", match.score_red+1, match.score_blue)
+    cond do
+      match.score_red+1 < 8 ->
+        MatchChannel.score("red",match.score_red+1)
+      match.score_red+1 == 8 ->
+        MatchChannel.score("red",match.score_red+1)
+        MatchChannel.game_end
+      true ->
+        MatchChannel.game_end
+    end
     changeset = Match.changeset(match, %{"score_red" => match.score_red+1})
-    # call raspberry
     case Repo.update(changeset) do
       {:ok, match} ->
         render(conn, "show.json", match: match)
@@ -47,9 +58,17 @@ defmodule Rumbl.MatchController do
   end
   def blue(conn, _params) do
     match = Repo.one!(from m in Match, order_by: [desc: m.id], limit: 1)
-    # update state to goal
     changeset = Match.changeset(match, %{"score_blue" => match.score_blue+1})
-    # call raspberry
+    rasbperry_score("blue", match.score_red, match.score_blue+1)
+    cond do
+      match.score_blue+1 < 8 ->
+        MatchChannel.score("blue",match.score_blue+1)
+      match.score_blue+1 == 8 ->
+        MatchChannel.score("blue",match.score_blue+1)
+        MatchChannel.game_end
+      true ->
+        MatchChannel.game_end
+    end
     case Repo.update(changeset) do
       {:ok, match} ->
         render(conn, "show.json", match: match)
@@ -66,6 +85,7 @@ defmodule Rumbl.MatchController do
 
     case Repo.update(changeset) do
       {:ok, match} ->
+        MatchChannel.players_changed(match.red_attack, match.red_defence, match.blue_attack, match.blue_defence)
         render(conn, "show.json", match: match)
       {:error, changeset} ->
         conn
@@ -82,5 +102,16 @@ defmodule Rumbl.MatchController do
     Repo.delete!(match)
 
     send_resp(conn, :no_content, "")
+  end
+
+
+  def rasbperry_started() do
+    HTTPoison.start
+    HTTPoison.get("10.168.10.23:3000/start")
+  end
+  def rasbperry_score(team, score_red, score_blue) do
+    HTTPoison.start
+    payload = Poison.encode!(%{"red" => score_red, "blue" => score_blue, "set" => 0})
+    HTTPoison.post("10.168.10.23:3000/update", payload, headers = [{"Content-type", "application/json"}])
   end
 end

@@ -42,6 +42,7 @@ defmodule Rumbl.Mixfile do
      {:cowboy, "~> 1.0"},
      {:gettext, "~> 0.9"},
      {:comeonin, "~> 2.0"},
+     {:httpoison, "~> 0.9.1"},
      {:info_sys, in_umbrella: true}
     ]
   end

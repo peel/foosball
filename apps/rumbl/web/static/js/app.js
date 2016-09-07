@@ -20,5 +20,6 @@ import "phoenix_html"
 
 import socket from "./socket"
 import Video from "./video"
+import Match from "./match"
 
 Video.init(socket, document.getElementById("video"))

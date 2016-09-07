@@ -2,21 +2,16 @@ defmodule Rumbl.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "videos:*", Rumbl.VideoChannel
+  channel "matches:lobby", Rumbl.MatchChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket
   # transport :longpoll, Phoenix.Transports.LongPoll
 
-  @max_age 2 * 7 * 24 * 60 * 60
+  @max_age 2 * 7 * 24 * 60 * 60 * 1000
 
   def connect(%{"token" => token}, socket) do
-    case Phoenix.Token.verify(socket, "user socket", token, max_age: @max_age) do
-      {:ok, user_id} ->
-        {:ok, assign(socket, :user_id, user_id)}
-      {:error, _reason} ->
-        :error
-    end
+    {:ok, assign(socket, :user_id, token)}
   end
   def connect(_params, _socket), do: :error
 
